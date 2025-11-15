@@ -1,0 +1,11 @@
+bitbucket:
+  api:
+    email: ${BITBUCKET_EMAIL:}
+    token: ${BITBUCKET_API_TOKEN:}
+    workspace: ${BITBUCKET_WORKSPACE:}
+
+quarkus:
+  rest-client:
+    bitbucket-api:
+      url: https://api.bitbucket.org/2.0
+      scope: jakarta.enterprise.context.ApplicationScoped
