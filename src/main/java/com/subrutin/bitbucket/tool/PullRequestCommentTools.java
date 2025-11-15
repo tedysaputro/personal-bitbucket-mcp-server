@@ -61,4 +61,20 @@ public class PullRequestCommentTools {
         CommentResponseDTO response = pullRequestCommentService.createInlineComment(workspace, reposlug, pullRequestId, filePath, lineNumber, commentText);
         return ToolResponse.structuredSuccess(response);
     }
+
+    @Tool(description = "Returns a specific pull request comment." +
+            "Use this to retrieve a comment's details, such as its content, author, or resolution status.")
+    public ToolResponse findAComment(
+        @ToolArg(description = "The workspace ID or slug (e.g., 'subrutin')") 
+        String workspace,
+        @ToolArg(description = "The repository slug (e.g., 'bitbucket-mcp-server')") 
+        String reposlug,
+        @ToolArg(description = "The pull request ID number") 
+        Integer pullRequestId,
+        @ToolArg(description = "The comment ID to retrieve") 
+        Integer commentId
+    ){
+        CommentResponseDTO response = pullRequestCommentService.findAComment(workspace, reposlug, pullRequestId, commentId);
+        return ToolResponse.structuredSuccess(response);
+    }
 }

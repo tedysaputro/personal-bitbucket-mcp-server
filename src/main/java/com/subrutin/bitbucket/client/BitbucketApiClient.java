@@ -14,7 +14,6 @@ import com.subrutin.bitbucket.dto.BitbucketRepositoriesResponseDTO;
 import com.subrutin.bitbucket.dto.CommentRequestDTO;
 import com.subrutin.bitbucket.dto.CommentResponseDTO;
 import com.subrutin.bitbucket.dto.PullRequestDTO;
-import com.subrutin.bitbucket.dto.PullRequestDetailDTO;
 import com.subrutin.bitbucket.dto.PullRequestListResponseDTO;
 
 @Path("/")
@@ -75,4 +74,14 @@ public interface BitbucketApiClient {
         @PathParam("pullRequestId") Integer pullRequestId,
         CommentRequestDTO commentRequestDTO
     );
+
+    @GET
+    @Path("/repositories/{workspace}/{reposlug}/pullrequests/{pullRequestId}/comments/{commentId}")
+    public CommentResponseDTO getACommentOnAPullRequest(
+        @PathParam("workspace") String workspace,
+        @PathParam("reposlug") String reposlug,
+        @PathParam("pullRequestId") Integer pullRequestId,
+        @PathParam("commentId") Integer commentId
+    );
+
 }

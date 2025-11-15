@@ -1,5 +1,7 @@
 package com.subrutin.bitbucket.service;
 
+import javax.xml.stream.events.Comment;
+
 import com.subrutin.bitbucket.dto.CommentResponseDTO;
 
 public interface PullRequestCommentService {
@@ -12,5 +14,7 @@ public interface PullRequestCommentService {
         String filePath,
         Integer lineNumber,
         String commentText);
+
+    public CommentResponseDTO findAComment(String workspace, String reposlug, Integer pullRequestId, Integer commentId);
 
 }

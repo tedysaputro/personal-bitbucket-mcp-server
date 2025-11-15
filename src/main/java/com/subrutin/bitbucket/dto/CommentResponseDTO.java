@@ -1,17 +1,22 @@
 package com.subrutin.bitbucket.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record CommentResponseDTO(
+    String type,
     Integer id,
-    @JsonProperty("created_on")
     String createdOn,
-    @JsonProperty("updated_on")
     String updatedOn,
     ContentDTO content,
     UserDTO user,
     Boolean deleted,
-    String type,
+    InlineDTO inline,
+    CommentLinksDTO links,
     PullRequestRefDTO pullrequest,
-    InlineDTO inline
+    CommentResolutionDTO resolution,
+    Boolean pending
 ) {}

@@ -47,4 +47,10 @@ public class PullRequestCommentServiceImpl implements PullRequestCommentService 
         return bitbucketApiClient.createACommentOnAPullRequest(workspace, reposlug, pullRequestId, requestBody);
     }
 
+    @Override
+    public CommentResponseDTO findAComment(String workspace, String reposlug, Integer pullRequestId,
+            Integer commentId) {
+        return bitbucketApiClient.getACommentOnAPullRequest(workspace, reposlug, pullRequestId, commentId);
+    }
+
 }
