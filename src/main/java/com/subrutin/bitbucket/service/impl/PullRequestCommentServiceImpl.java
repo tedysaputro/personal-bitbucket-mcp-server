@@ -3,8 +3,10 @@ package com.subrutin.bitbucket.service.impl;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import com.subrutin.bitbucket.client.BitbucketApiClient;
+import com.subrutin.bitbucket.dto.CommentListResponseDTO;
 import com.subrutin.bitbucket.dto.CommentRequestDTO;
 import com.subrutin.bitbucket.dto.CommentResponseDTO;
+import com.subrutin.bitbucket.dto.CommentUpdateRequestDTO;
 import com.subrutin.bitbucket.dto.ContentDTO;
 import com.subrutin.bitbucket.dto.InlineDTO;
 import com.subrutin.bitbucket.service.PullRequestCommentService;
@@ -51,6 +53,21 @@ public class PullRequestCommentServiceImpl implements PullRequestCommentService 
     public CommentResponseDTO findAComment(String workspace, String reposlug, Integer pullRequestId,
             Integer commentId) {
         return bitbucketApiClient.getACommentOnAPullRequest(workspace, reposlug, pullRequestId, commentId);
+    }
+
+    @Override
+    public CommentListResponseDTO findCommentList(String workspace, String reposlug, Integer pullRequestId, Integer page,
+            Integer pageLength, Integer size) {
+       return bitbucketApiClient.listCommentsOnAPullRequest(workspace, reposlug, pullRequestId, page, pageLength, size);
+    }
+
+    @Override
+    public CommentResponseDTO updateComment(String workspace, String reposlug, Integer pullRequestId, Integer commentId, String commentText) {
+        CommentUpdateRequestDTO requestBody = new CommentUpdateRequestDTO(
+            new ContentDTO(commentText)
+        );
+        
+        return bitbucketApiClient.updateACommentOnAPullRequest(workspace, reposlug, pullRequestId, commentId, requestBody);
     }
 
 }

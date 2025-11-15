@@ -1,7 +1,6 @@
 package com.subrutin.bitbucket.service;
 
-import javax.xml.stream.events.Comment;
-
+import com.subrutin.bitbucket.dto.CommentListResponseDTO;
 import com.subrutin.bitbucket.dto.CommentResponseDTO;
 
 public interface PullRequestCommentService {
@@ -16,5 +15,9 @@ public interface PullRequestCommentService {
         String commentText);
 
     public CommentResponseDTO findAComment(String workspace, String reposlug, Integer pullRequestId, Integer commentId);
+
+    public CommentListResponseDTO findCommentList(String workspace, String reposlug, Integer pullRequestId, Integer page, Integer pageLength, Integer size);
+
+    public CommentResponseDTO updateComment(String workspace, String reposlug, Integer pullRequestId, Integer commentId, String commentText);
 
 }
