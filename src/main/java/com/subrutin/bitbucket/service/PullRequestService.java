@@ -12,19 +12,19 @@ public interface PullRequestService {
     public PullRequestDTO findApullRequest(
         String workspace,
         String reposlug,
-        String pullRequestId
+        Integer pullRequestId
     );
 
     public String findDiffStatForAPullRequest(
         String workspace,
         String reposlug,
-        String pullRequestId
+        Integer id
     );
 
     public String getListChangesForAPullRequest(
         String workspace,
         String reposlug,
-        String pullRequestId
+        Integer pullRequestId
     );
 
 }

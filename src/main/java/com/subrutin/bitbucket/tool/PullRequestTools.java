@@ -40,10 +40,37 @@ public class PullRequestTools {
         @ToolArg(description = "The repository slug or name to get pull requests from") 
         String reposlug,
         @ToolArg(description = "The pull request ID to get details from") 
-        String pullRequestId
+        Integer pullRequestId
     ){
         PullRequestDTO response = pullRequestService.findApullRequest(workspace, reposlug, pullRequestId);
         return ToolResponse.structuredSuccess(response);
+    }
+
+
+    @Tool(description = "Redirects to the repository diffstat with the revspec that corresponds to the pull request. Use this to get the diffstat of a pull request.")
+    public ToolResponse findDiffStatForPullRequest(
+        @ToolArg(description = "The workspace ID or slug where the repository is located") 
+        String workspace,
+        @ToolArg(description = "The repository slug or name to get pull requests from") 
+        String reposlug,
+        @ToolArg(description = "The pull request ID to get") 
+        Integer id
+    ){
+        String response = pullRequestService.findDiffStatForAPullRequest(workspace, reposlug, id);
+        return ToolResponse.success(response);
+    }
+
+    @Tool(description = "Redirects to the repository diff with the revspec that corresponds to the pull request. Use this to get the list of changes in a pull request.")
+    public ToolResponse findListChangesInAPullRequest(
+        @ToolArg(description = "The workspace ID or slug where the repository is located") 
+        String workspace,
+        @ToolArg(description = "The repository slug or name to get pull requests from") 
+        String reposlug,
+        @ToolArg(description = "The pull request ID to get") 
+        Integer id
+    ) {
+        String response = pullRequestService.getListChangesForAPullRequest(workspace, reposlug, id);
+        return ToolResponse.success(response);
     }
         
     

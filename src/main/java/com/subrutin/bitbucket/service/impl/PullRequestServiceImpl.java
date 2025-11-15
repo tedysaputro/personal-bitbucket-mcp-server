@@ -23,17 +23,17 @@ public class PullRequestServiceImpl implements PullRequestService {
     }
 
     @Override
-    public PullRequestDTO findApullRequest(String workspace, String reposlug, String pullRequestId) {
+    public PullRequestDTO findApullRequest(String workspace, String reposlug, Integer pullRequestId) {
         return apiClient.getAPullRequest(workspace, reposlug, pullRequestId);
     }
 
     @Override
-    public String findDiffStatForAPullRequest(String workspace, String reposlug, String pullRequestId) {
+    public String findDiffStatForAPullRequest(String workspace, String reposlug, Integer pullRequestId) {
         return apiClient.getTheDiffStatForAPullRequest(workspace, reposlug, pullRequestId);
     }
 
     @Override
-    public String getListChangesForAPullRequest(String workspace, String reposlug, String pullRequestId) {
+    public String getListChangesForAPullRequest(String workspace, String reposlug, Integer pullRequestId) {
         return apiClient.getListChangesForAPullRequest(workspace, reposlug, pullRequestId);
     }
 

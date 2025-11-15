@@ -13,7 +13,6 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import com.subrutin.bitbucket.dto.BitbucketRepositoriesResponseDTO;
 import com.subrutin.bitbucket.dto.CommentRequestDTO;
 import com.subrutin.bitbucket.dto.CommentResponseDTO;
-import com.subrutin.bitbucket.dto.InlineCommentRequestDTO;
 import com.subrutin.bitbucket.dto.PullRequestDTO;
 import com.subrutin.bitbucket.dto.PullRequestDetailDTO;
 import com.subrutin.bitbucket.dto.PullRequestListResponseDTO;
@@ -47,7 +46,7 @@ public interface BitbucketApiClient {
     PullRequestDTO getAPullRequest(
         @PathParam("workspace") String workspace,
         @PathParam("reposlug") String reposlug,
-        @PathParam("pullRequestId") String pullRequestId
+        @PathParam("pullRequestId") Integer pullRequestId
     );
 
     @GET
@@ -55,7 +54,7 @@ public interface BitbucketApiClient {
     public String getTheDiffStatForAPullRequest(
         @PathParam("workspace") String workspace,
         @PathParam("reposlug") String reposlug,
-        @PathParam("pullRequestId") String pullRequestId
+        @PathParam("pullRequestId") Integer pullRequestId
     );
 
 
@@ -64,7 +63,7 @@ public interface BitbucketApiClient {
     public String getListChangesForAPullRequest(
         @PathParam("workspace") String workspace,
         @PathParam("reposlug") String reposlug,
-        @PathParam("pullRequestId") String pullRequestId
+        @PathParam("pullRequestId") Integer pullRequestId
     );
 
 
@@ -73,17 +72,7 @@ public interface BitbucketApiClient {
     public CommentResponseDTO createACommentOnAPullRequest(
         @PathParam("workspace") String workspace,
         @PathParam("reposlug") String reposlug,
-        @PathParam("pullRequestId") String pullRequestId,
+        @PathParam("pullRequestId") Integer pullRequestId,
         CommentRequestDTO commentRequestDTO
-    );
-
-
-    @POST
-    @Path("/repositories/{workspace}/{reposlug}/pullrequests/{pullRequestId}/comments")
-    public CommentResponseDTO createAInlineCommentOnAPullRequest(
-        @PathParam("workspace") String workspace,
-        @PathParam("reposlug") String reposlug,
-        @PathParam("pullRequestId") String pullRequestId,
-        InlineCommentRequestDTO inlineCommentRequestDTO
     );
 }
