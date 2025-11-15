@@ -2,6 +2,7 @@ package com.subrutin.bitbucket.client;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -11,10 +12,11 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import com.subrutin.bitbucket.dto.BitbucketRepositoriesResponseDTO;
+import com.subrutin.bitbucket.dto.CommentListResponseDTO;
 import com.subrutin.bitbucket.dto.CommentRequestDTO;
 import com.subrutin.bitbucket.dto.CommentResponseDTO;
+import com.subrutin.bitbucket.dto.CommentUpdateRequestDTO;
 import com.subrutin.bitbucket.dto.PullRequestDTO;
-import com.subrutin.bitbucket.dto.PullRequestDetailDTO;
 import com.subrutin.bitbucket.dto.PullRequestListResponseDTO;
 
 @Path("/")
@@ -74,5 +76,35 @@ public interface BitbucketApiClient {
         @PathParam("reposlug") String reposlug,
         @PathParam("pullRequestId") Integer pullRequestId,
         CommentRequestDTO commentRequestDTO
+    );
+
+    @GET
+    @Path("/repositories/{workspace}/{reposlug}/pullrequests/{pullRequestId}/comments/{commentId}")
+    public CommentResponseDTO getACommentOnAPullRequest(
+        @PathParam("workspace") String workspace,
+        @PathParam("reposlug") String reposlug,
+        @PathParam("pullRequestId") Integer pullRequestId,
+        @PathParam("commentId") Integer commentId
+    );
+
+    @GET
+    @Path("/repositories/{workspace}/{repoSlug}/pullrequests/{pullRequestId}/comments")
+    public CommentListResponseDTO listCommentsOnAPullRequest(
+        @PathParam("workspace") String workspace,
+        @PathParam("repoSlug") String repoSlug,
+        @PathParam("pullRequestId") Integer pullRequestId,
+        @QueryParam("page") Integer page,
+        @QueryParam("pagelen") Integer pageLength,
+        @QueryParam("size") Integer size
+    );
+
+    @PUT
+    @Path("/repositories/{workspace}/{reposlug}/pullrequests/{pullRequestId}/comments/{commentId}")
+    public CommentResponseDTO updateACommentOnAPullRequest(
+        @PathParam("workspace") String workspace,
+        @PathParam("reposlug") String reposlug,
+        @PathParam("pullRequestId") Integer pullRequestId,
+        @PathParam("commentId") Integer commentId,
+        CommentUpdateRequestDTO commentUpdateRequestDTO
     );
 }
