@@ -1,4 +1,6 @@
-# Bitbucket MCP Server
+# Personal Bitbucket MCP Server
+
+[![MCP Badge](https://lobehub.com/badge/mcp/tedysaputro-personal-bitbucket-mcp-server?style=for-the-badge)](https://lobehub.com/mcp/tedysaputro-personal-bitbucket-mcp-server)
 
 A Model Context Protocol (MCP) server that provides AI assistants with tools to interact with Bitbucket Cloud repositories. Built with Quarkus, the Supersonic Subatomic Java Framework.
 
