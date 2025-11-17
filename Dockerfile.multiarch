@@ -1,0 +1,59 @@
+####
+# Multi-Architecture Dockerfile for Bitbucket MCP Server - Native Image
+# Optimized for linux/amd64 and linux/arm64
+# Uses GraalVM to build native executable with Quarkus
+#
+# Build with:
+# docker buildx build --platform linux/amd64,linux/arm64 -t bitbucket-mcp-server:native .
+####
+
+# Stage 1: Build native executable with GraalVM
+FROM ghcr.io/graalvm/native-image-community:21-muslib AS build
+
+WORKDIR /build
+
+# Install Maven
+RUN microdnf install -y wget tar gzip && \
+    wget https://archive.apache.org/dist/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz && \
+    tar xzf apache-maven-3.9.6-bin.tar.gz -C /opt && \
+    ln -s /opt/apache-maven-3.9.6 /opt/maven && \
+    microdnf clean all
+
+ENV MAVEN_HOME=/opt/maven
+ENV PATH="${MAVEN_HOME}/bin:${PATH}"
+
+# Copy Maven wrapper and pom.xml first for better layer caching
+COPY .mvn/ .mvn/
+COPY mvnw mvnw.cmd pom.xml ./
+
+# Download dependencies (cached if pom.xml hasn't changed)
+RUN ./mvnw dependency:go-offline -B
+
+# Copy source code
+COPY src ./src
+
+# Build native executable
+RUN ./mvnw package -Dnative -DskipTests -B \
+    -Dquarkus.native.additional-build-args=--verbose,--initialize-at-run-time=org.jboss.logmanager.LogManager
+
+# Stage 2: Runtime image - minimal distroless/static
+FROM gcr.io/distroless/base-debian12:nonroot
+
+WORKDIR /work
+
+# Copy the native executable from build stage
+COPY --from=build /build/target/*-runner /work/application
+
+# Set permissions
+USER nonroot:nonroot
+
+EXPOSE 8080
+
+ENV QUARKUS_HTTP_HOST=0.0.0.0
+
+# Health check using wget (available in distroless base)
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+    CMD ["/work/application", "-Dquarkus.http.host=0.0.0.0"]
+
+ENTRYPOINT ["/work/application"]
+CMD ["-Dquarkus.http.host=0.0.0.0"]
