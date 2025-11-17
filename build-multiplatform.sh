@@ -5,7 +5,7 @@
 
 # Set default values
 IMAGE_NAME=${1:-"subrutin/bitbucket-mcp-server"}
-TAG=${2:-"0.0.2"}
+TAG=${2:-"latest"}
 FULL_IMAGE_NAME="$IMAGE_NAME:$TAG"
 
 echo "🏗️  Building multi-platform Docker image: $FULL_IMAGE_NAME"
