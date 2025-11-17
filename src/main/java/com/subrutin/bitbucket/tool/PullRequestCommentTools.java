@@ -18,7 +18,7 @@ public class PullRequestCommentTools {
         this.pullRequestCommentService = pullRequestCommentService;
     }
 
-    @Tool(description = "Creates a comment on a pull request. Use this to add a comment or feedback to a pull request.")
+    @Tool(name = "create_comment", description = "Creates a comment on a pull request. Use this to add a comment or feedback to a pull request.")
     public ToolResponse createComment(
         @ToolArg(description = "The workspace ID or slug where the repository is located") 
         String workspace,
@@ -34,7 +34,7 @@ public class PullRequestCommentTools {
     }
 
     //update comment
-    @Tool(description = "Updates a comment on a pull request. Use this to modify an existing comment.")
+    @Tool(name = "update_comment", description = "Updates a comment on a pull request. Use this to modify an existing comment.")
     public ToolResponse updateComment(
         @ToolArg(description = "The workspace ID or slug where the repository is located") 
         String workspace,
@@ -51,7 +51,7 @@ public class PullRequestCommentTools {
         return ToolResponse.structuredSuccess(response);
     }
 
-    @Tool(description = "Creates an inline comment on a specific line of code in a pull request diff. " +
+    @Tool(name = "create_inline_comment", description = "Creates an inline comment on a specific line of code in a pull request diff. " +
             "This will attach the comment to a specific line in the file changes. " +
             "CRITICAL REQUIREMENTS: " +
             "1. The filePath must EXACTLY match the file path shown in the PR diff (case-sensitive). " +
@@ -81,7 +81,7 @@ public class PullRequestCommentTools {
         return ToolResponse.structuredSuccess(response);
     }
 
-    @Tool(description = "Returns a specific pull request comment." +
+    @Tool(name = "find_a_comment", description = "Returns a specific pull request comment." +
             "Use this to retrieve a comment's details, such as its content, author, or resolution status.")
     public ToolResponse findAComment(
         @ToolArg(description = "The workspace ID or slug (e.g., 'subrutin')") 
@@ -98,7 +98,7 @@ public class PullRequestCommentTools {
     }
 
 
-    @Tool(description = "Returns a list of comments for a specific pull request. " +
+    @Tool(name = "find_comment_list", description = "Returns a list of comments for a specific pull request. " +
             "Use this to retrieve a list of comments for a pull request, including pagination details.")
     public ToolResponse findCommentList(
         @ToolArg(description = "The workspace ID or slug (e.g., 'subrutin')") 

@@ -5,17 +5,33 @@ bitbucket:
     workspace: ${BITBUCKET_WORKSPACE:}
 
 quarkus:
+  mcp:
+    server:
+      traffic-logging:
+        enabled: false
+        text-limit: 500
+      stdio:
+        enabled: true
+        null-system-out: true
   rest-client:
     bitbucket-api:
       url: https://api.bitbucket.org/2.0
       scope: jakarta.enterprise.context.ApplicationScoped
       follow-redirects: true
+  
+  # Logging Configuration
   log:
-    category:
-      "org.jboss.resteasy.reactive.client":
-        level: DEBUG
-      "com.subrutin.bitbucket":
-        level: DEBUG
+    console:
+      stderr: true
+    level: ERROR  # Hanya tampilkan error (gunakan OFF untuk mematikan semua log)
+  # Uncomment for debugging
+  #   category:
+  #     "io.quarkiverse.mcp":
+  #       level: DEBUG
+  #     "org.jboss.resteasy.reactive.client":
+  #       level: DEBUG
+  #     "com.subrutin.bitbucket":
+  #       level: DEBUG
 
 # Profile untuk HTTPS
 # "%https":

@@ -16,7 +16,7 @@ public class UserProfileTools {
         this.userProfileService = userProfileService;
     }
 
-    @Tool(name = "Fetch user profile")
+    @Tool(name = "fetch_user_profile")
     public ToolResponse findUserProfile() {
         String response =  userProfileService.findUserProfile();
         return ToolResponse.success(response);

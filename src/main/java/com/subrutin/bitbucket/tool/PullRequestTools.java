@@ -22,7 +22,7 @@ public class PullRequestTools {
 
 
 
-    @Tool(description = "Returns all pull requests on the specified repository. Use this to get list of pull requests from a Bitbucket repository.")
+    @Tool(name = "find_all_pull_request", description = "Returns all pull requests on the specified repository. Use this to get list of pull requests from a Bitbucket repository.")
     public ToolResponse findAllPullRequest(
         @ToolArg(description = "The workspace ID or slug where the repository is located") 
         String workspace,
@@ -33,7 +33,7 @@ public class PullRequestTools {
         return ToolResponse.structuredSuccess(response);
     }
 
-    @Tool(description = "Returns a specific pull request by ID. Use this to get details of a single pull request from a Bitbucket repository.")
+    @Tool(name = "find_a_pull_request", description = "Returns a specific pull request by ID. Use this to get details of a single pull request from a Bitbucket repository.")
     public ToolResponse findAPullRequest(
         @ToolArg(description = "The workspace ID or slug where the repository is located") 
         String workspace,
@@ -47,7 +47,7 @@ public class PullRequestTools {
     }
 
 
-    @Tool(description = "Redirects to the repository diffstat with the revspec that corresponds to the pull request. Use this to get the diffstat of a pull request.")
+    @Tool(name = "find_diff_stat_for_pull_request", description = "Redirects to the repository diffstat with the revspec that corresponds to the pull request. Use this to get the diffstat of a pull request.")
     public ToolResponse findDiffStatForPullRequest(
         @ToolArg(description = "The workspace ID or slug where the repository is located") 
         String workspace,
@@ -60,7 +60,7 @@ public class PullRequestTools {
         return ToolResponse.success(response);
     }
 
-    @Tool(description = "Redirects to the repository diff with the revspec that corresponds to the pull request. Use this to get the list of changes in a pull request.")
+    @Tool(name = "find_list_changes_in_pull_request", description = "Redirects to the repository diff with the revspec that corresponds to the pull request. Use this to get the list of changes in a pull request.")
     public ToolResponse findListChangesInAPullRequest(
         @ToolArg(description = "The workspace ID or slug where the repository is located") 
         String workspace,
