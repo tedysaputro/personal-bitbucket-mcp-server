@@ -17,7 +17,8 @@ The Model Context Protocol (MCP) is an open protocol that standardizes how appli
 - 🐳 **Multi-Architecture Docker Images** (AMD64 & ARM64)
 - 🔐 **Secure Authentication** using Bitbucket App Passwords
 - 📦 **RESTful API** for direct HTTP access
-- ⚡ **SSE & HTTP Stream Transport** - Compatible with Cursor, VS Code, Cherry Studio
+- ⚡ **Multiple Transport Options** - stdio (universal), SSE, and HTTP Stream
+- 🎯 **Universal Client Support** - stdio works with all MCP clients (Claude Desktop, Cursor, VS Code, Cherry Studio, and more)
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
@@ -56,7 +57,81 @@ docker run -p 8080:8080 \
 
 ### Using MCP with Supported Clients
 
-This server uses **SSE (Server-Sent Events)** transport, which requires the server to be running and accessible via HTTP/HTTPS.
+This server supports multiple transport protocols. Choose the method that works best for your client:
+
+#### 🎯 Method 1: stdio Transport (Recommended - Works with All Clients)
+
+The stdio transport allows direct process communication without needing a running HTTP server. This is the **universal method** that works with all MCP clients.
+
+**For Claude Desktop**, add this to your config file:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "bitbucket": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e", "BITBUCKET_EMAIL=your-email@example.com",
+        "-e", "BITBUCKET_API_TOKEN=your-api-token",
+        "-e", "BITBUCKET_WORKSPACE=your-workspace",
+        "subrutin/bitbucket-mcp-server:stdio-0.0.2"
+      ]
+    }
+  }
+}
+```
+
+Restart Claude Desktop, and you'll see the Bitbucket tools available in the 🔨 tools menu.
+
+**For Cursor IDE**, add to your Cursor settings (same format as Claude Desktop):
+
+```json
+{
+  "mcpServers": {
+    "bitbucket": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-e", "BITBUCKET_EMAIL=your-email@example.com",
+        "-e", "BITBUCKET_API_TOKEN=your-api-token",
+        "-e", "BITBUCKET_WORKSPACE=your-workspace",
+        "subrutin/bitbucket-mcp-server:stdio-0.0.2"
+      ]
+    }
+  }
+}
+```
+
+**For VS Code** with MCP extension (same format):
+
+```json
+{
+  "mcp.servers": {
+    "bitbucket": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-e", "BITBUCKET_EMAIL=your-email@example.com",
+        "-e", "BITBUCKET_API_TOKEN=your-api-token",
+        "-e", "BITBUCKET_WORKSPACE=your-workspace",
+        "subrutin/bitbucket-mcp-server:stdio-0.0.2"
+      ]
+    }
+  }
+}
+```
+
+**For other MCP clients**, use the same Docker command pattern with stdio transport.
+
+#### 🌐 Method 2: SSE Transport (Alternative for Web-Based Clients)
+
+The SSE transport requires the server to be running and accessible via HTTP.
 
 **Step 1:** Start the server using Docker:
 
@@ -113,18 +188,29 @@ Install the MCP extension and add to your settings:
 
 ```
 
-#### ❌ Claude Desktop (Not Yet Supported)
-
-Claude Desktop requires HTTPS for SSE connections, but this server currently runs on HTTP only. Support for Claude Desktop will be available once HTTPS/TLS support is added (see [Roadmap](#roadmap)).
-
-**Workaround**: Use stdio transport (planned for future release) or set up a reverse proxy with HTTPS.
-
 ### Supported Transports
 
-- ✅ **SSE (Server-Sent Events)** - Works with Cursor, VS Code, Cherry Studio
+- ✅ **stdio** - Direct process communication (Universal - Recommended)
+  - **Works with: ALL MCP clients** (Claude Desktop, Cursor, VS Code, Cherry Studio, etc.)
+  - No HTTP server needed
+  - Simplest setup
+  - Use image: `subrutin/bitbucket-mcp-server:stdio-0.0.2`
+  
+- ✅ **SSE (Server-Sent Events)** - HTTP-based transport
+  - **Alternative option for web-based clients**
+  - Requires running HTTP server
+  - Long-lived connections
+  - Real-time updates
+  - Use image: `subrutin/bitbucket-mcp-server:latest`
+  
 - ✅ **HTTP Stream** - For custom MCP clients
-- ❌ **stdio** - Not yet supported (planned)
-- ❌ **HTTPS/TLS** - Not yet supported (required for Claude Desktop)
+  - Request/response patterns
+  - Programmatic access
+  - Use image: `subrutin/bitbucket-mcp-server:latest`
+
+- ⚠️ **HTTPS/TLS** - Not yet supported
+  - Currently only HTTP available for SSE
+  - HTTPS support planned for future release
 
 ## MCP Tools Reference
 
@@ -323,30 +409,49 @@ quarkus:
 
 This MCP server supports the following transport protocols:
 
+- ✅ **stdio** - Direct process communication (Universal - Recommended)
+  - **Works with: ALL MCP clients** (Claude Desktop, Cursor, VS Code, Cherry Studio, and more)
+  - No HTTP server needed
+  - Simplest setup and integration
+  - **Docker image**: `subrutin/bitbucket-mcp-server:stdio-0.0.2`
+  
 - ✅ **SSE (Server-Sent Events)** - `GET /mcp/sse`
-  - Works with: **Cursor IDE**, **VS Code**, **Cherry Studio**
+  - **Alternative for web-based clients**
+  - Requires running HTTP server
   - Long-lived connections
   - Real-time updates
   - Currently HTTP only (HTTPS coming soon)
+  - **Docker image**: `subrutin/bitbucket-mcp-server:latest`
   
 - ✅ **HTTP Stream** - `POST /mcp/stream`
   - For custom MCP clients
   - Request/response patterns
   - Programmatic access
+  - **Docker image**: `subrutin/bitbucket-mcp-server:latest`
 
-- ❌ **stdio** - Not yet supported (in development)
-  - Will enable direct process communication
-  - Required for simplified Claude Desktop integration
-  - See [Roadmap](#roadmap) for timeline
-
-- ❌ **HTTPS/TLS** - Not yet supported (in development)
-  - Required for Claude Desktop SSE connections
+- ⚠️ **HTTPS/TLS** - Not yet supported (in development)
+  - Will enable secure SSE connections
   - SSL certificate configuration needed
   - See [Roadmap](#roadmap) for timeline
 
 ## Running with Docker
 
-### Pull and Run
+### Available Docker Images
+
+This project provides two Docker images for different use cases:
+
+1. **`subrutin/bitbucket-mcp-server:latest`** - SSE/HTTP transport
+   - For Cursor, VS Code, Cherry Studio
+   - Requires running HTTP server
+   - Supports SSE and HTTP Stream
+
+2. **`subrutin/bitbucket-mcp-server:stdio-0.0.2`** - stdio transport (Recommended)
+   - For ALL MCP clients (Claude Desktop, Cursor, VS Code, Cherry Studio, etc.)
+   - Direct process communication
+   - No HTTP server needed
+   - Simplest setup
+
+### Pull and Run (SSE/HTTP Transport)
 
 ```bash
 # Pull the latest image
@@ -361,6 +466,22 @@ docker run -d \
   -e BITBUCKET_WORKSPACE=your-workspace \
   subrutin/bitbucket-mcp-server:latest
 ```
+
+### Run with stdio Transport (All MCP Clients - Recommended)
+
+```bash
+# Pull the stdio image
+docker pull subrutin/bitbucket-mcp-server:stdio-0.0.2
+
+# Run interactively (for testing)
+docker run -i --rm \
+  -e BITBUCKET_EMAIL=your-email@example.com \
+  -e BITBUCKET_API_TOKEN=your-api-token \
+  -e BITBUCKET_WORKSPACE=your-workspace \
+  subrutin/bitbucket-mcp-server:stdio-0.0.2
+```
+
+**Note**: For MCP clients (Claude Desktop, Cursor, VS Code, etc.), use the configuration shown in [Method 1: stdio Transport](#-method-1-stdio-transport-recommended---works-with-all-clients) instead of running manually.
 
 ### Using Docker Compose
 
@@ -420,9 +541,10 @@ curl -N http://localhost:8080/mcp
 npx @modelcontextprotocol/inspector http://localhost:8080/mcp/sse
 ```
 
-**Available MCP Endpoints:**
-- `GET /mcp/sse` - SSE transport (recommended for Claude Desktop)
-- `POST /mcp/` - HTTP Stream transport (for other MCP clients)
+**Available MCP Transports:**
+- `stdio` - Direct process communication (Universal - works with ALL MCP clients - use `stdio-0.0.2` image) ⭐ Recommended
+- `GET /mcp/sse` - SSE transport (Alternative - requires HTTP server)
+- `POST /mcp/stream` - HTTP Stream transport (for custom MCP clients)
 
 ## Building
 
@@ -491,18 +613,37 @@ docker build -f src/main/docker/Dockerfile.jvm -t bitbucket-mcp-server:jvm .
 
 ### MCP Endpoints
 
-The MCP server provides two transport options:
+The MCP server provides three transport options:
 
-#### 1. SSE (Server-Sent Events) - Recommended
+#### 1. stdio - Direct Process Communication ✨ New! (Universal - Recommended)
+```bash
+# Use with Docker
+docker run -i --rm \
+  -e BITBUCKET_EMAIL=your-email@example.com \
+  -e BITBUCKET_API_TOKEN=your-api-token \
+  -e BITBUCKET_WORKSPACE=your-workspace \
+  subrutin/bitbucket-mcp-server:stdio-0.0.2
+```
+
+Best for:
+- **ALL MCP clients** (Claude Desktop, Cursor, VS Code, Cherry Studio, etc.)
+- No HTTP server needed
+- Direct process communication
+- Simplest setup
+- Recommended for all use cases
+
+#### 2. SSE (Server-Sent Events)
 ```
 GET http://localhost:8080/mcp/sse
 ```
 
 Best for:
+- **Alternative option** when stdio is not preferred
+- Web-based clients
 - Long-lived connections
 - Real-time updates
 
-#### 2. HTTP Stream
+#### 3. HTTP Stream
 ```
 POST http://localhost:8080/mcp/stream
 Content-Type: application/json
@@ -512,8 +653,6 @@ Best for:
 - Custom MCP clients
 - Request/response patterns
 - Programmatic access
-
-**Note:** This server does **not support stdio transport**. Only SSE and HTTP Stream are available.
 
 ### REST API Endpoints
 
@@ -626,15 +765,19 @@ docker logs -f bitbucket-mcp
 
 We're actively working on improving the Bitbucket MCP Server. Here's what's planned:
 
+### ✅ Recently Completed
+
+- **stdio Transport Support** - ✨ Now available!
+  - Universal transport for ALL MCP clients
+  - Direct process communication without HTTP server
+  - Works with Claude Desktop, Cursor, VS Code, Cherry Studio, and more
+  - Use image: `subrutin/bitbucket-mcp-server:stdio-0.0.2`
+  - Released in version 0.0.2
+
 ### 🚧 In Development
 
-- **stdio Transport Support** - Enable stdio-based MCP clients to connect directly without HTTP
-  - Will allow simpler integration with Claude Desktop (no need to run separate server)
-  - Direct process communication for better performance
-  - Expected in next major release
-
-- **HTTPS/TLS Support** - Enable secure connections for Claude Desktop compatibility
-  - Required for Claude Desktop SSE connections
+- **HTTPS/TLS Support** - Enable secure connections for SSE transport
+  - Will enable Claude Desktop to use SSE transport
   - SSL certificate configuration
   - Automatic HTTP to HTTPS redirect
   - Expected in next major release
