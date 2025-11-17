@@ -1,0 +1,48 @@
+####
+# Multi-platform Dockerfile untuk Quarkus native application
+# Supports linux/amd64 dan linux/arm64
+####
+
+# Stage 1: Build native binary menggunakan GraalVM
+FROM --platform=$BUILDPLATFORM ghcr.io/graalvm/graalvm-community:21-ol8 AS build
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+
+# Install necessary build tools
+RUN microdnf install -y gcc zlib-devel && \
+    microdnf clean all
+
+# Set working directory
+WORKDIR /build
+
+# Copy Maven wrapper and pom.xml
+COPY mvnw pom.xml ./
+COPY .mvn .mvn
+
+# Download dependencies (cache layer)
+RUN ./mvnw dependency:go-offline -B
+
+# Copy source code
+COPY src src
+
+# Build native binary for target platform
+# GraalVM will automatically detect the target architecture
+RUN ./mvnw package -Dnative -DskipTests -B -Dquarkus.native.march=compatibility
+
+# Stage 2: Runtime image
+FROM --platform=$BUILDPLATFORM registry.access.redhat.com/ubi9/ubi-minimal:9.6
+
+WORKDIR /work/
+
+# Create user with proper permissions
+RUN chown 1001 /work && \
+    chmod "g+rwX" /work && \
+    chown 1001:root /work
+
+# Copy the native binary from build stage
+COPY --from=build --chown=1001:root --chmod=0755 /build/target/*-runner /work/application
+
+EXPOSE 8080
+USER 1001
+
+ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]

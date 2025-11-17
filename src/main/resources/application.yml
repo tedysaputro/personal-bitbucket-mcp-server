@@ -10,12 +10,20 @@ quarkus:
       url: https://api.bitbucket.org/2.0
       scope: jakarta.enterprise.context.ApplicationScoped
       follow-redirects: true
-      logging:
-        scope: request-response
-        body-limit: 1024
   log:
     category:
       "org.jboss.resteasy.reactive.client":
         level: DEBUG
       "com.subrutin.bitbucket":
         level: DEBUG
+
+# Profile untuk HTTPS
+# "%https":
+#   quarkus:
+#     http:
+#       ssl:
+#         certificate:
+#           key-store-file: src/main/resources/keystore.p12
+#           key-store-password: ${SSL_KEYSTORE_PASSWORD:password}
+#       ssl-port: 8443
+#       insecure-requests: redirect
