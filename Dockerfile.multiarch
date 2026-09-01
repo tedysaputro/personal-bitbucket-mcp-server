@@ -8,7 +8,10 @@
 ####
 
 # Stage 1: Build native executable with GraalVM
-FROM ghcr.io/graalvm/native-image-community:21-muslib AS build
+# The glibc-based image is required: the musl variant (native-image-community:21-muslib)
+# cannot compile the native-image C-ABI query code (musl lacks glibc-specific locale
+# constants such as LC_ADDRESS/Lmid_t), and muslib images are published for x86_64 only.
+FROM ghcr.io/graalvm/native-image-community:21 AS build
 
 WORKDIR /build
 
@@ -32,11 +35,14 @@ RUN ./mvnw dependency:go-offline -B
 # Copy source code
 COPY src ./src
 
-# Build native executable
+# Build native executable. -H:+StaticExecutableWithDynamicLibC produces a
+# mostly-static binary (all application and JDK libraries statically linked,
+# only libc left dynamic) so it runs on the minimal distroless base image,
+# which does not ship additional shared libraries such as libz.
 RUN ./mvnw package -Dnative -DskipTests -B \
-    -Dquarkus.native.additional-build-args=--verbose,--initialize-at-run-time=org.jboss.logmanager.LogManager
+    -Dquarkus.native.additional-build-args=-H:+StaticExecutableWithDynamicLibC
 
-# Stage 2: Runtime image - minimal distroless/static
+# Stage 2: Runtime image - minimal distroless (Debian 12, glibc) base
 FROM gcr.io/distroless/base-debian12:nonroot
 
 WORKDIR /work
@@ -51,9 +57,11 @@ EXPOSE 8080
 
 ENV QUARKUS_HTTP_HOST=0.0.0.0
 
-# Health check using wget (available in distroless base)
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD ["/work/application", "-Dquarkus.http.host=0.0.0.0"]
+# No HEALTHCHECK is defined: the distroless base image ships no shell, wget,
+# or curl, so there is no lightweight HTTP client to probe the endpoint with.
+# (Running the application itself as the health check is not viable, as it
+# starts the server and never exits.) This matches the official Quarkus
+# native-image Dockerfile convention.
 
 ENTRYPOINT ["/work/application"]
 CMD ["-Dquarkus.http.host=0.0.0.0"]
